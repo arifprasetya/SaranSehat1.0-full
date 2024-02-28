@@ -1,0 +1,38 @@
+{% extends "dashboard.html" %}
+{% block title %} Manage Data Kalkulasi {% endblock %}
+{% block content %}
+
+<div class="section">
+    <div action="/manage_user" method="post"></form>
+    <h4>Manage Data Kalkulasi</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="table-cell">No.</th>
+                <th class="table-cell">Nama</th>
+                <th class="table-cell">IMT</th>
+                <th class="table-cell">BMR</th>
+                <th class="table-cell">TDEE</th>
+                <th class="table-cell">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- TODO: Loop through the database entries to display them in this table -->
+            {% for bio in bios %}
+            <tr>
+                <td class="table-cell">{{ loop.index }}</td>
+                <td class="table-cell">{{ bio.name }}</td>
+                <td class="table-cell">{{ format_decimal(bio.imt) }}</td>
+                <td class="table-cell">{{ format_decimal(bio.bmr) }} kkal</td>
+                <td class="table-cell">{{ format_decimal(bio.tdee) }} kkal</td>
+                <td class="table-cell">
+                    <div class="d-block my-1"><a href="/print/{{ bio.id }}" class="btn btn-primary btn-sm" style="width: 60px"> Print </a></div>
+                    <div class="d-block my-1"><form action="/delete/{{ bio.id }}" method="post"><button type="submit" class="btn btn-danger btn-sm"style="width: 60px">Delete</button></form></div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

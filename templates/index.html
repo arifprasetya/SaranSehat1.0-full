@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %} Home {% endblock %}
+{% block content %}
+<!-- kontainer 1 -->
+{% if get_flashed_messages() %}
+<header>
+  <div id="flash-message" class="alert alert-primary my-auto mx-auto text-center" role="alert">
+    {{ get_flashed_messages() | join(" ") }}
+  </div>
+</header>
+
+{% endif %}
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- sidebar kanan -->
+    <aside class="col-lg-5">
+      <div class="bg-white p-1">
+        <!-- div images carrousel autoplay-->
+        <div class="container fade animate__animated animate__fadeInLeft" animation-duration: 2s;>
+          <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item active" data-bs-interval="4000">
+                <img src="/static/images/Sekolah sehat 2.svg" class="d-block w-100" alt="home1">
+              </div>
+              <div class="carousel-item" data-bs-interval="4000">
+                <img src="/static/images/Sekolah sehat.svg" class="d-block w-100" alt="home2">
+              </div>
+              <div class="carousel-item" data-bs-interval="4000">
+                <img src="/static/images/home illlustration 2.svg" class="d-block w-100" alt="home3">
+              </div>
+              <div class="carousel-item" data-bs-interval="4000">
+                <img src="/static/images/home illlustration.svg" class="d-block w-100" alt="home4">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- akhir div images carrousel autoplay-->
+      </div>
+    </aside>
+    <!-- akhir sidebar kanan -->
+    <!-- Sidebar kiri-->
+    <main class="col-lg-7">
+      <div class="bg-white p-1">
+        <!-- Jumbotron -->
+        <div class="container fade animate__animated animate__fadeInRight" animation-duration: 2s;>
+          <div class="jumbotron">
+            <h1 class="display-4">Selamat datang di SaranSehat!</h1>
+            <h2 class="lead"> Portal pendukung "Kampanye Sekolah Sehat".</h2>
+            <p> Kampanye Sekolah Sehat adalah segala upaya yang dilakukan secara bersama-sama dan terus menerus oleh
+              semua pihak mulai dari pemerintah pusat sampai ke pemerintah daerah, para mitra, satuan pendidikan,
+              masyarakat pemangku kepentingan lainnya tentang pentingnya penerapan Sekolah Sehat dengan berfokus pada
+              Sehat Bergizi, Sehat Fisik dan Sehat Imunisasi di satuan pendidikan.</p>
+            <hr class="my-4">
+            <p> SaranSehat memberikan informasi tentang BMT, BMR, TDEE dan menu diet yang dapat digunakan oleh siapa
+              saja termasuk para pendidik dan murid.</p>
+            <br>
+            <a href="/informasi" class="btn btn-primary btn-lg">Selengkapnya...</a>
+          </div>
+        </div>
+        <!-- akhir Jumbotron -->
+      </div>
+    </main>
+    <!-- akhir sidebar kiri-->
+  </div>
+</div>
+<!-- akhir kontainer 1 -->
+{% endblock %}

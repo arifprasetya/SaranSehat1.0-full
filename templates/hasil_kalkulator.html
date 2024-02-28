@@ -1,0 +1,28 @@
+{% extends "kalkulator.html" %}
+
+{% block title %}
+Hasil Kalkulator Kesehatan
+{% endblock %}
+
+{% block content1 %}
+        <!-- Kolom kanan untuk menampilkan hasil kalkulasi -->
+        <div class="container fade animate__animated animate__fadeInRight" animation-duration: 2s;>
+            <div id="imtResult" class="result-container mt-4" action="/hasil_kalkulator" method="get">
+                <div class="result-title">Hasil Kalkulasi {{ nama }}</div>
+                <div class="result-item">Indeks Massa Tubuh Anda adalah: <strong>{{ format_decimal(IMT) }}</strong></div>
+                <div class="result-item">Anda termasuk <strong>{{ klasifikasiBerat }}</strong></div>
+                <div class="result-item"><strong>Saran kami berkaitan berat badan Anda: </strong> {{ saranIMT }}</div>
+                <div class="result-item"><strong>Saran kami berkaitan dengan menu makanan sehari-hari Anda: </strong>{{ saranMenu }}</div>
+                <div class="result-item">Berkaitan dengan konsumsi kalori harian,</div>
+                <div class="result-item">Basal Metabolic Rate Anda adalah: <strong>{{ format_decimal(BMR) }} kkal</strong></div>
+                <div class="result-item">BMR Anda termasuk kategori: <strong>{{ klasifikasiBMR }}</strong></div>
+                <div class="result-item">{{ saranBMR }}</div>
+                <div class="result-item">{{ rencanaDiet }}</div>
+                <div class="result-item">TDEE Anda adalah: <strong>{{ format_decimal(TDEE) }}</strong></div>
+                <a href="/menu" class="btn btn-primary">Lihat Konsumsi Kalori Harian</a> 
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

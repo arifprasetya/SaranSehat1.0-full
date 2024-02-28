@@ -1,0 +1,173 @@
+html, body{
+  height: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+}
+
+.content {
+  flex: 1;
+}
+
+
+.full-height{
+  height: 100vh;
+}
+
+.full-width{
+  height: 100vw;
+}
+
+footer{
+  margin-top: auto;
+}
+
+.jumbotron {
+  color: #000000;
+  text-align: left;
+  padding: 20px 20px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Teks di tengah */
+.jumbotron h1 {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.jumbotron h2 {
+  font-size: medium;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.jumbotron p {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+
+#kaloriButton {
+  display: none;
+}
+
+nav {
+  background-color: #128bc3;
+}
+
+.navbar-nav .nav-link {
+  position: relative;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: white;
+  transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+.navbar-nav .nav-item.active .nav-link {
+  color: #000000;
+}
+
+#flash-message {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: rgba(0.3, 0, 0, 0.3);
+}
+
+
+/* Untuk kalkulator */
+.result-container {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.result-item {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.advice-container {
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+#kaloriButton {
+  margin-top: 20px;
+}
+
+/* Efek hover pada tombol */
+#kaloriButton:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* IMT result hidden */
+/* #imtResult {
+  display: none;
+} */
+
+
+/* flash message */
+#flash-message {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 80%;
+    max-width: 600px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #f7eb61; /* Warna latar belakang */
+    color: #1a1818; /* Warna teks */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Bayangan */
+  }
+  
+  /* Animasi fade in */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .alert-primary {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+/* sroll to top */
+#scrollTop:hover path {
+    fill: yellow;
+}
+

@@ -1,0 +1,120 @@
+html, body{
+    height: 100%;
+    overflow-x: hidden;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    background-color: #333;
+    padding-top: 50px;
+    transition: all 0.3s;
+    color: white;
+  }
+  
+  .nav-link{
+    color: #fff;
+  }
+  
+  .nav-link:hover{
+    color: orange;
+  }
+  
+  
+  .sidebar.active {
+    left: 0;
+  }
+  
+  .sidebar ul.nav.flex-column li.nav-item {
+    padding: 10px 15px;
+  }
+  
+  .content {
+    margin-left: 20px;
+    padding: 20px;
+  }
+  
+  /* Show the toggle button by default */
+  .toggle-btn {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+        left: -250px;
+    }
+  
+    .toggle-btn {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 9999; /* Ensure it's above other elements */
+    }
+  
+    .content {
+        margin-left: 50px;
+    }
+  
+    /* Hide the sidebar on small screens */
+    .sidebar.active {
+        left: 0;
+  
+    }
+  }
+  
+  .table-cell {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+  }
+  
+  @media (max-width: 768px) {
+    .table-cell {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+  
+    .table-cell:nth-of-type(1):before { content: "Nama : "; font-weight: bold; }
+    .table-cell:nth-of-type(2):before { content: "Email : "; font-weight: bold; }
+    .table-cell:nth-of-type(3):before { content: "Role : "; font-weight: bold;}
+  
+    .section table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+    }
+  
+    .section table,
+    .section table th,
+    .section table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .section table thead {
+        display: none;
+    }
+  }
+  
+  
+  /* pagination menu */
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination .btn-primary {
+    margin: 5px; /* Atur jarak antara tombol */
+}

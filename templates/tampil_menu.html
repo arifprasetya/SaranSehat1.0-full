@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="Menu">
+    <h2>Hasil Pencarian:</h2>
+    <p>Jumlah Kalori Maksimum: {{ max_calories }} kalori</p>
+
+    <h2>Makanan yang Sesuai:</h2>
+    <ul>
+        {% for food in breakfast_foods %}
+            {% if total_calories <= max_calories %}
+                <li>{{ food.name }} - {{ food.calories }} kalori</li>
+            {% endif %}
+        {% endfor %}
+        {% for food in snack_foods %}
+            {% if total_calories <= max_calories %}
+                <li>{{ food.name }} - {{ food.calories }} kalori</li>
+            {% endif %}
+        {% endfor %}
+        {% for food in lunch_foods %}
+            {% if total_calories <= max_calories %}
+                <li>{{ food.name }} - {{ food.calories }} kalori</li>
+            {% endif %}
+        {% endfor %}
+        {% for food in dinner_foods %}
+            {% if total_calories <= max_calories %}
+                <li>{{ food.name }} - {{ food.calories }} kalori</li>
+            {% endif %}
+        {% endfor %}
+        {% for food in drink_foods %}
+            {% if total_calories <= max_calories %}
+                <li>{{ food.name }} - {{ food.calories }} kalori</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% if not breakfast_foods and not snack_foods and not lunch_foods and not dinner_foods and not drink_foods %}
+        <p>Tidak ada makanan yang sesuai dengan kriteria.</p>
+    {% endif %}
+</div>
+{% endblock %}

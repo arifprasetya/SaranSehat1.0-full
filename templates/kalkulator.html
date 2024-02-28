@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}
+Kalkulator Kesehatan
+{% endblock %}
+
+{% block content %}
+<div class="row g-6 mt-2">
+    <h2 class="display-6 link-body-emphasis text-center"><b>Kalkulator IMT, BMR dan TDEE</b></h2>
+    <div class="col-md-6">
+        <!-- Awal Kalkulator -->
+        <div class="container">
+            <div class="row">
+                <!-- Kolom kiri untuk memasukkan data -->
+                <form id="imtForm" action="/kalkulator" method="post">
+                    <div class="mb-1">
+                        <label for="Name" class="form-label">Nama:</label>
+                        <input type="text" name="nama" required class="form-control">
+                    </div>
+                    <div class="mb-1">
+                        <label for="height" class="form-label">Tinggi Badan (cm) :</label>
+                        <input type="number" name="tinggi" step="0.01" required class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="weight" class="form-label">Berat Badan (kg) Gunakan . untuk tanda desimal:</label>
+                        <input type="number" name="berat" step="0.01" required class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Jenis Kelamin:</label>
+                        <select class="form-select" id="gender" name="gender" required>
+                            <option value="male">Laki-laki</option>
+                            <option value="female">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Usia:</label>
+                        <input type="number" class="form-control" name="usia" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="activityLevel" class="form-label">Level Aktivitas:</label>
+                        <select class="form-select" id="activityLevel" name="activity" required>
+                            <option value="sedentary">Sedentary (Sangat Kurang Aktif)</option>
+                            <option value="light">Light (Kurang Aktif)</option>
+                            <option value="moderate">Moderate (Aktif)</option>
+                            <option value="active">Active (Sangat Aktif)</option>
+                            <option value="veryActive">Very Active (Sangat Aktif Sekali)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Hitung IMT, BMR, dan TDEE</button>
+                    <a href="/kalkulator" class="btn btn-secondary">Reset</a>
+                </form>
+            </div>
+        </div>
+        <!-- Akhir Kalkulator -->
+    </div>
+    <div class="col-md-6">
+        <!-- Kolom kanan untuk menampilkan hasil kalkulasi -->
+        {% block content1 %}
+        
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}

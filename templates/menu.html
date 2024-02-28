@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}
+Menu
+{% endblock %}
+{% block content %}
+<div class="Menu">
+    <h2>Menu</h2>
+    <h1>Pilih Makanan</h1>
+    <form action="/menu" method="POST">
+        <select name="food_id">
+            {% for food in foods %}
+                <option value="{{ food['id'] }}">{{ food['name'] }}</option>
+            {% endfor %}
+        </select>
+        <select name="meal_type">
+            <option value="sarapan">Sarapan</option>
+            <option value="makan_siang">Makan Siang</option>
+            <option value="makan_malam">Makan Malam</option>
+            <option value="minuman">Minuman</option>
+            <option value="snack">Snack</option>
+        </select>
+        <button type="submit">Tambahkan ke Makanan Saya</button>
+    </form>
+    <h1>User Intake</h1>
+    <tableborder="1">
+        <tr>
+            <th>Food Name</th>
+            <th>Meal Type</th>
+            <th>Amount</th>
+            <th>Calories</th>
+        </tr>
+        {% for menu in user_menus %}
+        <tr>
+            <td>{{ menu['food_name'] }}</td>
+            <td>{{ menu['meal_type'] }}</td>
+            <td>{{ menu['amount'] }}</td>
+            <td>{{ menu['calories'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+{% endblock %}

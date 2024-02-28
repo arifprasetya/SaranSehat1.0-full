@@ -1,0 +1,36 @@
+{% extends "dashboard.html" %}
+{% block title %} Dashboard {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="section">
+        <h4 class="mb-4">Admin Dashboard</h4>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Jumlah Pengguna</h5>
+                        <p class="card-text display-4">{{ total_users }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Data Kalkulasi</h5>
+                        <p class="card-text display-4">{{ total_bio }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Jumlah Menu Diet</h5>
+                        <p class="card-text display-4">{{ total_foods }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

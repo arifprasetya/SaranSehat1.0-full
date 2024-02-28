@@ -1,0 +1,108 @@
+{% extends "dashboard.html" %}
+{% block title %} Manage Data Menu Diet {% endblock %}
+{% block content %}
+
+{% if get_flashed_messages() %}
+<header>
+  <div id="flash-message" class="alert alert-primary my-auto mx-auto text-center" role="alert">
+    {{ get_flashed_messages() | join(" ") }}
+  </div>
+</header>
+{% endif %}
+
+{% set total_pages = ((foods|length - 1) // limit) + 1 %}
+
+<div class="section">
+    <div action="/manage_user" method="post">
+        </form>
+        <h4>Manage Data Menu Diet</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="table-cell">No.</th>
+                    <th class="table-cell">Nama Makanan</th>
+                    <th class="table-cell">Satuan</th>
+                    <th class="table-cell">Jumlah Kalori</th>
+                    <th class="table-cell">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through the database entries to display them in this table -->
+                {% for food in foods %}
+                {% if loop.index >= (page - 1) * limit + 1 and loop.index <= page * limit %} <tr>
+                    <td class="table-cell">{{ loop.index }}</td>
+                    <td class="table-cell">{{ food.name }}</td>
+                    <td class="table-cell">{{ food.unit }}</td>
+                    <td class="table-cell">{{ food.calories }} Kalori</td>
+                    <td class="table-cell">
+                        <div class="d-block my-1"><a href="#" class="btn btn-primary btn-sm" style="width: 60px"
+                                data-bs-toggle="modal" data-bs-target="#editModal{{ food.food_id }}"> Edit </a></div>
+                        <div class="d-block my-1">
+                            <form action="/delete/{{ food.food_id }}" method="post"><button type="submit"
+                                    class="btn btn-danger btn-sm" style="width: 60px">Delete</button></form>
+                        </div>
+                    </td>
+                    </tr>
+
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editModal{{ food.food_id }}" tabindex="-1"
+                        aria-labelledby="editModalLabel{{ food.food_id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel{{ food.food_id }}">Edit Food</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Form for editing food -->
+                                    <form action="/edit/{{ food.food_id }}" method="post">
+                                        <!-- Input fields for editing food details -->
+                                        <div class="mb-3">
+                                            <label for="editName{{ food.food_id }}" class="form-label">Nama Makanan</label>
+                                            <input type="text" class="form-control" id="editName{{ food.food_id }}" name="name" value="{{ food.name }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editUnit{{ food.food_id }}" class="form-label">Satuan</label>
+                                            <input type="text" class="form-control" id="editUnit{{ food.food_id }}" name="unit" value="{{ food.unit }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editCalories{{ food.food_id }}" class="form-label">Jumlah Kalori</label>
+                                            <input type="text" class="form-control" id="editCalories{{ food.food_id }}" name="calories" value="{{ food.calories }}">
+                                        </div>
+                                        <!-- Submit button -->
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    <!-- End of loop -->
+                    </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <div>
+                            {% if page > 1 %}
+                            <a href="?page={{ page - 1 }}" class="btn btn-secondary" style="background-color: gray;">
+                                <bold> Previous </bold>
+                            </a>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if total_pages > 1 %}
+                            <span>Page {{ page }} of {{ total_pages }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if page < total_pages %} <a href="?page={{ page + 1 }}" class="btn btn-secondary"
+                                style="background-color: gray;">
+                                <bold> Next </bold></a>
+                                {% endif %}
+                        </div>
+                    </div>
+
+                    {% endblock %}
