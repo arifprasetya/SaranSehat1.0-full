@@ -7,6 +7,8 @@ from helpers import login_admin_required, login_required, apology, format_decima
 
 app = Flask(__name__)
 
+# Test Commit
+
 # Add format_decimal to the template globals
 app.add_template_global(format_decimal, 'format_decimal')
 
