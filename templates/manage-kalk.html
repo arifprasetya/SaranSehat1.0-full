@@ -23,11 +23,15 @@
                 <td class="table-cell">{{ loop.index }}</td>
                 <td class="table-cell">{{ bio.name }}</td>
                 <td class="table-cell">{{ format_decimal(bio.imt) }}</td>
-                <td class="table-cell">{{ format_decimal(bio.bmr) }} kkal</td>
-                <td class="table-cell">{{ format_decimal(bio.tdee) }} kkal</td>
+                <td class="table-cell">{{ format_decimal(bio.bmr) }} kalori</td>
+                <td class="table-cell">{{ format_decimal(bio.tdee) }} kalori</td>
                 <td class="table-cell">
-                    <div class="d-block my-1"><a href="/print/{{ bio.id }}" class="btn btn-primary btn-sm" style="width: 60px"> Print </a></div>
-                    <div class="d-block my-1"><form action="/delete/{{ bio.id }}" method="post"><button type="submit" class="btn btn-danger btn-sm"style="width: 60px">Delete</button></form></div>
+                    <div class="d-block my-1"><a href="/print/kalkulasi/{{ bio.id }}" class="btn btn-primary btn-sm" style="width: 60px"> Print </a></div>
+                    <div class="d-block my-1">
+                        <form action="/delete/kalkulasi/{{ bio.id }}" method="post" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                            <button type="submit" class="btn btn-danger btn-sm" style="width: 60px">Delete</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}

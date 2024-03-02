@@ -9,6 +9,7 @@ Hasil Kalkulator Kesehatan
         <div class="container fade animate__animated animate__fadeInRight" animation-duration: 2s;>
             <div id="imtResult" class="result-container mt-4" action="/hasil_kalkulator" method="get">
                 <div class="result-title">Hasil Kalkulasi {{ nama }}</div>
+                <div class="result-item">{{ gender }} {{ usia }} tahun, dengan Tinggi Badan: <strong>{{ tinggi_cm }}</strong>, Berat Badan: <strong>{{ berat }}</strong> </div>
                 <div class="result-item">Indeks Massa Tubuh Anda adalah: <strong>{{ format_decimal(IMT) }}</strong></div>
                 <div class="result-item">Anda termasuk <strong>{{ klasifikasiBerat }}</strong></div>
                 <div class="result-item"><strong>Saran kami berkaitan berat badan Anda: </strong> {{ saranIMT }}</div>

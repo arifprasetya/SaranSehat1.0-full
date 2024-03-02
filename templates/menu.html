@@ -3,42 +3,204 @@
 Menu
 {% endblock %}
 {% block content %}
-<div class="Menu">
-    <h2>Menu</h2>
-    <h1>Pilih Makanan</h1>
-    <form action="/menu" method="POST">
-        <select name="food_id">
-            {% for food in foods %}
-                <option value="{{ food['id'] }}">{{ food['name'] }}</option>
-            {% endfor %}
-        </select>
-        <select name="meal_type">
-            <option value="sarapan">Sarapan</option>
-            <option value="makan_siang">Makan Siang</option>
-            <option value="makan_malam">Makan Malam</option>
-            <option value="minuman">Minuman</option>
-            <option value="snack">Snack</option>
-        </select>
-        <button type="submit">Tambahkan ke Makanan Saya</button>
-    </form>
-    <h1>User Intake</h1>
-    <tableborder="1">
-        <tr>
-            <th>Food Name</th>
-            <th>Meal Type</th>
-            <th>Amount</th>
-            <th>Calories</th>
-        </tr>
-        {% for menu in user_menus %}
-        <tr>
-            <td>{{ menu['food_name'] }}</td>
-            <td>{{ menu['meal_type'] }}</td>
-            <td>{{ menu['amount'] }}</td>
-            <td>{{ menu['calories'] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
 
+<div class="row g-6 mt-2">
+    <div class="col-md-6">
+        <h4>Saran Menu Diet</h4>
+        <!-- Form pencarian -->
+        <form action="/menu" method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Cari berdasarkan nama makanan" name="search">
+                <button class="btn btn-primary" type="submit">Cari</button>
+                {% if query %}
+                <a href="/menu" class="btn btn-secondary">Reset</a>
+                {% endif %}
+            </div>
+        </form>
+        <!-- Allert hasil pencarian -->
+        {% if query %}
+        <div class="alert alert-info text-center" role="alert">
+            Hasil pencarian '{{ query }}'
+        </div>
+        {% endif %}
+        <!-- Awal tampil menu -->
+        <div action="/menu" method="post">
+            {% set total_pages = ((foods|length - 1) // limit) + 1 %}
+            </form>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="table-cell">No.</th>
+                        <th class="table-cell">Nama Makanan</th>
+                        <th class="table-cell">Jumlah Kalori</th>
+                        <th class="table-cell">Tambahkan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Looping food in foods buat scan data dalam tabel foods -->
+                    {% for food in foods %}
+                    {% if loop.index >= (page - 1) * limit + 1 and loop.index <= page * limit %} <tr>
+                        <td class="table-cell">{{ loop.index }}</td>
+                        <td class="table-cell">{{ food.name }}</td>
+                        <td class="table-cell">{{ food.calories }} Kalori</td>
+                        <td class="table-cell">
+                            {% if session["user_id"] %}
+                            <div class="d-block my-1"><a href="#" class="btn btn-primary btn-sm" style="width: 60px"
+                                    data-bs-toggle="modal" data-bs-target="#addModal{{ food.food_id }}"> + </a></div>
+                            <div class="d-block my-1">
+                                {% endif %}
+                        </td>
+                        </tr>
+                        <!-- Modal Bootstrap untuk menambahkan makanan -->
+                        <div class="modal fade" id="addModal{{ food.food_id }}" tabindex="-1"
+                            aria-labelledby="editModalLabel{{ food.food_id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel{{ food.food_id }}">Tambahkan dalam
+                                            Hitung Menu</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Form untuk menambahkan makanan ke dalam user_intake -->
+                                        <form action="/hitung_menu" method="post">
+                                            <!-- Input fields untuk rincian makanan -->
+                                            <input type="hidden" class="form-control" name="food_id"
+                                                value="{{ food.food_id }}">
+                                            <input type="text" class="form-control" name="food_name"
+                                                value="{{ food.name }}" readonly>
+                                            <div class="mb-3">
+                                                <label for="amount{{ food.food_id }}" class="form-label">Porsi</label>
+                                                <input type="number" class="form-control" id="amount{{ food.food_id }}"
+                                                    name="amount" value="1" min="1">
+                                                <input type="text" class="form-control" name="unit"
+                                                    value="{{ food.unit }}" readonly>
+                                                <input type="hidden" class="form-control" name="calories"
+                                                    value="{{ food.calories }}">
+                                                <div class="mb-3">
+                                                    <label for="mealType{{ food.food_id }}" class="form-label">Menu
+                                                        untuk:</label>
+                                                    <select class="form-select" id="mealType{{ food.food_id }}"
+                                                        name="meal_type">
+                                                        <option value="Sarapan">Sarapan</option>
+                                                        <option value="Snack">Snack</option>
+                                                        <option value="Makan Siang">Makan Siang</option>
+                                                        <option value="Makan Malam">Makan Malam</option>
+                                                        <option value="Minuman">Minuman</option>
+                                                    </select>
+                                                </div>
+                                                <!-- Submit button -->
+                                                <button action="/saran_menu" method="post" type="submit"
+                                                    class="btn btn-primary">Tambahkan</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        {% endif %}
+                        {% endfor %}
+                        <!-- End of loop -->
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            <div class="pagination">
+                <div>
+                    {% if page > 1 %}
+                    <a href="?page={{ page - 1 }}{% if query %}&search={{ query }}{% endif %}" class="btn btn-secondary" style="background-color: gray;">
+                        <bold> Previous </bold>
+                    </a>
+                    {% else %}
+                    <button class="btn btn-secondary" disabled>
+                        <bold> Previous </bold>
+                    </button>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if total_pages > 1 %}
+                    <span>Page {{ page }} of {{ total_pages }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page < total_pages %}
+                    {% if query %}
+                    <a href="?page={{ page + 1 }}&search={{ query }}" class="btn btn-secondary" style="background-color: gray;">
+                        <bold> Next </bold>
+                    </a>
+                    {% else %}
+                    <a href="?page={{ page + 1 }}" class="btn btn-secondary" style="background-color: gray;">
+                        <bold> Next </bold>
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <button class="btn btn-secondary" disabled>
+                        <bold> Next </bold>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Akhir tampil menu-->
+    </div>
+    <div class="col-md-6">
+        <!-- Kolom kanan untuk menampilkan hasil menu -->
+        <div class="result-container mt-4" action="/menu" method="get">
+            <div class="result-title">Hai {{ data_bio.name }},</div>
+            <div class="result-item">IMT Anda: <strong>{{ format_decimal(data_bio.imt) }}</strong></div>
+            <div class="result-item">BMR Anda: <strong>{{ format_decimal(data_bio.bmr) }}</strong></div>
+            <div class="result-item">TDEE Anda: <strong>{{ format_decimal(data_bio.tdee) }}</strong></div>
+            <div class="result-item"> * Jumlah asupan kalori harian yang disarankan adalah di antara BMR dan TDEE Anda.
+            <div class="result-item"><li>IMT kurang dari 18.5/kurus, tambah asupan melebihi sedikit dari kalori TDEE.</li></div>
+            <div class="result-item"><li>IMT normal (18.5 <= IMT < 24.9), jaga pola makan dan pola hidup yang sehat.</li></div>
+            <div class="result-item"><li>IMT di atas normal (di atas 25/gemuk, obesitas level 1, 2, atau 3), kurangi asupan kurang dari TDEE namun tetap di atas BMR sehingga secara aman, berat badan Anda akan turun.</li></div>
+        </div>
+
+        <div class="result-container mt-4" action="/menu" method="get">
+            <!-- tampilan tabel user intake -->
+            <h4>Hitung Kalori Menu</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="table-cell">Nama Makanan/Minuman</th>
+                        <th class="table-cell">Untuk</th>
+                        <th class="table-cell">Jumlah</th>
+                        <th class="table-cell">Total Kalori</th>
+                        <th class="table-cell"> Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through the database entries to display them in this table -->
+                    {% for data_menu in data_menus %}
+                    <tr>
+                        <td class="table-cell">{{ data_menu.food_name }}</td>
+                        <td class="table-cell">{{ data_menu.meal_type }}</td>
+                        <td class="table-cell">{{ data_menu.amount }}{{ data_menu.unit }}</td>
+                        <td class="table-cell">{{ data_menu.amount * data_menu.calories }}</td>
+                        <td class="table-cell">
+                            <form action="/delete/{{ data_menu.id }}" method="post">
+                                <button type="submit" class="btn btn-danger btn-sm" style="width: 60px">Delete</button>
+                            </form>
+                        </td>
+                    {% endfor %}
+                    {% if data_menus %}
+                    <tr>
+                        <th colspan="3" class="table-cell">Total Kalori</th>
+                        <th class="table-cell">{{ total_calories }}</th>
+                        <th class="table-cell">Kalori</th>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="table-cell">Tidak ada data yang tersedia</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
 </div>
-
+</div>
+</div>
 {% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}
+Hitung Kalori Menu
+{% endblock %}
+{% block content %}
+
+<div class="result-container mt-4" action="/menu" method="get">
+    <!-- tampilan tabel user intake -->
+    <h4>Hitung Kalori Menu</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="table-cell">Nama Makanan/Minuman</th>
+                <th class="table-cell">Untuk</th>
+                <th class="table-cell">Jumlah</th>
+                <th class="table-cell">Total Kalori</th>
+                <th class="table-cell"> Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Loop through the database entries to display them in this table -->
+            {% for data_menu in data_menus %}
+            <tr>
+                <td class="table-cell">{{ data_menu.food_name }}</td>
+                <td class="table-cell">{{ data_menu.meal_type }}</td>
+                <td class="table-cell">{{ data_menu.amount }}{{ data_menu.unit }}</td>
+                <td class="table-cell">{{ data_menu.amount * data_menu.calories }}</td>
+                <td class="table-cell">
+                    <form action="/delete/{{ data_menu.id }}" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm" style="width: 60px">Delete</button>
+                    </form>
+                </td>
+            {% endfor %}
+            {% if data_menus %}
+            <tr>
+                <th colspan="3" class="table-cell">Total Kalori</th>
+                <th class="table-cell">{{ total_calories }}</th>
+                <th class="table-cell">Kalori</th>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="table-cell">Tidak ada data yang tersedia</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

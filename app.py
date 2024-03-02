@@ -8,7 +8,6 @@ from helpers import login_admin_required, login_required, apology, format_decima
 app = Flask(__name__)
 
 # Test Commit
-
 # Add format_decimal to the template globals
 app.add_template_global(format_decimal, 'format_decimal')
 
@@ -31,21 +30,117 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+# ----------------------------- static page ---------
+# index
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# information
 @app.route('/informasi')
 def informasi():
     return render_template('informasi.html')
 
+# about 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# ------------------------------ login-logout-register user ----------------
+
+# login function
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    session.clear()
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if not request.form.get("username"):
+            return apology("User name harus diisi")
+        elif not request.form.get("password"):
+            return apology("Password harus diisi")
+        rows = db.execute("SELECT * FROM users WHERE username = ?", username)
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+            return apology("Password atau username sudahkah benar?")
+        elif len(rows) == 1:
+            # handle multiple different level auth
+            if rows[0]["role"] == "member":
+                session["user_id"] = rows[0]["id"]
+                session["role"] = rows[0]["role"]
+                session["username"] = rows[0]["username"]
+                flash("Anda berhasil login")
+                return redirect("/")
+            elif rows[0]["role"] == "admin":
+                session["user_id"] = rows[0]["id"]
+                session["role"] = rows[0]["role"]
+                session["username"] = rows[0]["username"]
+                flash("Selamat Datang Admin!")
+                return redirect("/")
+            else:
+                return render_template("login.html")
+    else:
+        return render_template('login.html')
+
+# logout function
+@app.route("/logout")
+def logout():
+    """Log user out"""
+    # Forget any user_id
+    session.clear()
+    # Redirect user to login form
+    return redirect("/")
+
+# register function
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    session.clear()
+    if request.method=="POST":
+        username = request.form.get("username")
+        if not request.form.get("username"):
+            return apology("Silakan mengisikan username")
+
+        email = request.form.get("email")
+        if not request.form.get("email"):
+            return apology("Silakan mengisikan email")
+
+        password = request.form.get("password")
+        if not request.form.get("password"):
+            return apology("Silakan mengisikan password")
+
+        confirmation = request.form.get("confirmation")
+        if not request.form.get("confirmation"):
+            return apology("Silakan mengisikan ulang passwordnya")
+
+        if password != confirmation:
+            return apology("Your password doesn't match")
+        
+        check_if_available = db.execute("SELECT * FROM users WHERE username = ? OR email = ?", username, email)
+        if len(check_if_available) == 1:
+            return apology("Username atau email sudah digunakan di situs ini. Silakan pilih username/email yang lain")
+
+        hashed = generate_password_hash(password)
+
+        db.execute("INSERT INTO users (username, email, hash, role) VALUES (?, ?, ?, ?)", username, email, hashed, "member")
+
+        registered = db.execute("select * from users where username = ?", username)
+        session["user_id"] = registered[0]["id"]
+        session["role"] = registered[0]["role"]
+        flash("Anda telah berhasil mendaftar di situs ini")
+        return redirect("/")
+    else:
+        return render_template("register.html")
+    
+
+# ------------------------------ calculation ------------------
+# Calculation function
 @app.route('/kalkulator', methods=["GET", "POST"])
 @login_required
 def kalkulator():
     if request.method == "POST":
-        nama = (request.form.get("nama"))
-        if not nama:
-            return apology("Masukkan Nama")
+        nama = request.form.get("nama")
+        db.execute("UPDATE users SET name=? WHERE id=?", nama, session['user_id'])
+        if not request.form.get("nama"):
+            return apology("Masukkan Nama")       
         tinggi_cm = float(request.form.get("tinggi"))
         tinggi = tinggi_cm / 100
         if not tinggi or tinggi <=0 :
@@ -64,10 +159,10 @@ def kalkulator():
             return apology("Masukkan activity")
 
         # Hitung IMT
-        if gender == "male":
+        if gender == "Laki-laki":
             IMT = berat/(tinggi ** 2)
             print(IMT)
-        elif gender == "female":
+        elif gender == "Perempuan":
             IMT = berat/(tinggi ** 2) * 1.1
             print(IMT)
         # Output Saran
@@ -102,12 +197,11 @@ def kalkulator():
             saranIMT = "Segera konsultasikan dengan profesional kesehatan untuk perencanaan penurunan berat badan yang aman dan efektif"
             saranMenu = "Mulailah dengan perubahan kecil, pilih sayuran hijau, protein berkualitas seperti ayam tanpa kulit, dan variasi buah-buahan seperti buah delima atau buah naga"
 
-
         # Hitung BMR
-        if gender == "male":
+        if gender == "Laki-laki":
             BMR = 88.362 + (13.397 * berat) + (4.799 * tinggi * 100) - (5.677 * usia)
             print(BMR)
-        elif gender == "female":
+        elif gender == "Perempuan":
             BMR = 447.593 + (9.247 * berat) + (3.098 * tinggi * 100) - (4.330 * usia)
             print(BMR)
 
@@ -147,146 +241,98 @@ def kalkulator():
         #nilaiTDEE = TDEE
 
         #db.execute
-        db.execute("insert into bio (user_id, name, imt, bmr, tdee, timestamp) values (?, ?, ?, ?, ?, datetime('now'))", session["user_id"], nama, IMT, BMR, TDEE)
-        return render_template('hasil_kalkulator.html', format_decimal=format_decimal, IMT=IMT, klasifikasiBerat=klasifikasiBerat, saranIMT=saranIMT, saranMenu=saranMenu, BMR=BMR, klasifikasiBMR=klasifikasiBMR, saranBMR=saranBMR, rencanaDiet=rencanaDiet, TDEE=TDEE, nama=nama)
+        db.execute("INSERT INTO bio (user_id, name, imt, bmr, tdee, timestamp) VALUES (?, ?, ?, ?, ?, datetime('now'))", session["user_id"], nama, IMT, BMR, TDEE)
+
+        return render_template('hasil_kalkulator.html', format_decimal=format_decimal, IMT=IMT, klasifikasiBerat=klasifikasiBerat, saranIMT=saranIMT, saranMenu=saranMenu, BMR=BMR, klasifikasiBMR=klasifikasiBMR, saranBMR=saranBMR, rencanaDiet=rencanaDiet, TDEE=TDEE,nama=nama, gender=gender, usia=usia, tinggi_cm=tinggi_cm, berat=berat)
     else:
         return render_template('kalkulator.html')
-    
+
+# calculator result
 @app.route('/hasil_kalkulator', methods=['GET', 'POST'])
 @login_required
 def hasil_kalkulator():
     return render_template('hasil_kalkulator.html')
 
-
-@app.route('/menu', methods=['GET', 'POST'])
+# --------------------------------- diet menu function --------------------------------
+# menu function
+@app.route('/menu', methods=["GET", "POST"])
 @login_required
-def menu():
-    def get_foods_by_category(category):
-        foods = db.execute("SELECT * FROM foods WHERE category=?", category)
-        return foods
+def show_menu():
+    # paginasi
+    page = request.args.get('page', 1, type=int)
+    limit = 10
+    halaman = db.execute("SELECT COUNT(*) AS total_foods FROM foods")[0]['total_foods']
+    total_halaman = (halaman + limit - 1) // limit
+    foods = db.execute("SELECT * FROM foods")
+    food = foods[0]
+    
+    # proses data bio utk menampilkan hasil
+    data_bio = db.execute("SELECT id, name, imt, bmr, tdee FROM bio ORDER BY id DESC LIMIT 1")[0]
+    # proses data user_intake
+    data_menus = db.execute("SELECT * FROM user_intake")
+    total_calories = sum(menu["amount"] * menu["calories"] for menu in data_menus)
+    # pencarian menu
+    query = request.args.get('search')
+    if query:
+        foods = db.execute("SELECT * FROM foods WHERE name LIKE ?", ('%' + query + '%'))
+    else:
+        foods = db.execute("SELECT * FROM foods")
+    return render_template("menu.html", food=food, foods=foods, page=page, limit=limit, total_halaman=total_halaman, query=query, data_bio=data_bio, data_menus=data_menus, total_calories=total_calories)
 
-    def calculate_total_calories(foods):
-        total_calories = sum(food['calories'] for food in foods)
-        return total_calories
-
+    
+# user select menu
+@app.route('/hitung_menu', methods=['POST'])
+@login_required
+def hitung_menu():
+    user_id = session["user_id"]
     if request.method == 'POST':
-        max_calories = int(request.form['max_calories'])
-        breakfast_foods = get_foods_by_category('sarapan')
-        snack_foods = get_foods_by_category('snack')
-        lunch_foods = get_foods_by_category('makan_siang')
-        dinner_foods = get_foods_by_category('makan_malam')
-        drink_foods = get_foods_by_category('minuman')
+        bio_id_rows = db.execute("SELECT id FROM bio WHERE user_id = ?", user_id)
+        if bio_id_rows:
+            bio_id = bio_id_rows[0]['id']
+            food_id = request.form.get('food_id')
+            food_name = request.form.get('food_name')
+            amount = request.form.get('amount')
+            unit = request.form.get('unit')
+            calories = request.form.get('calories')
+            meal_type = request.form.get('meal_type')
+
+            db.execute("INSERT INTO user_intake (bio_id, food_id, food_name, meal_type, amount, unit, calories) VALUES (?, ?, ?, ?, ?, ?, ?)", bio_id, food_id, food_name, meal_type, amount, unit, calories)
+            return redirect('/menu')
+        else:
+            return redirect('/menu')
         
-        breakfast_calories = calculate_total_calories(breakfast_foods)
-        snack_calories = calculate_total_calories(snack_foods)
-        lunch_calories = calculate_total_calories(lunch_foods)
-        dinner_calories = calculate_total_calories(dinner_foods)
-        drink_calories = calculate_total_calories(drink_foods)
-        
-        # Menghitung total kalori dari semua kategori makanan
-        total_calories = breakfast_calories + snack_calories + lunch_calories + dinner_calories + drink_calories
-        
-        return render_template('tampil_menu.html', 
-                               breakfast_foods=breakfast_foods, 
-                               snack_foods=snack_foods, 
-                               lunch_foods=lunch_foods, 
-                               dinner_foods=dinner_foods, 
-                               drink_foods=drink_foods, 
-                               breakfast_calories=breakfast_calories, 
-                               snack_calories=snack_calories, 
-                               lunch_calories=lunch_calories, 
-                               dinner_calories=dinner_calories, 
-                               drink_calories=drink_calories, 
-                               total_calories=total_calories,
-                               max_calories=max_calories)
-    return render_template('menu.html')
+    # if request.method == 'POST':
+        # bio_id_rows = db.execute("SELECT id FROM bio")
+        # bio_id = bio_id_rows[0]['id']
+        # food_id = request.form.get('food_id')
+        # food_name = request.form.get('food_name')
+        # amount = request.form.get('amount')
+        # unit = request.form.get('unit')
+        # calories = request.form.get('calories')
+        # meal_type = request.form.get('meal_type')
 
-@app.route('/login', methods=["GET", "POST"])
-def login():
-    session.clear()
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        if not request.form.get("username"):
-            return apology("User name harus diisi")
-        elif not request.form.get("password"):
-            return apology("Password harus diisi")
-        rows = db.execute("SELECT * FROM users WHERE username = ?", username)
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
-            return apology("Password atau username sudahkah benar?")
-        elif len(rows) == 1:
-            # handle multiple different level auth
-            if rows[0]["role"] == "member":
-                session["user_id"] = rows[0]["id"]
-                session["role"] = rows[0]["role"]
-                session["username"] = rows[0]["username"]
-                flash("Anda berhasil login")
-                return redirect("/")
-            elif rows[0]["role"] == "admin":
-                session["user_id"] = rows[0]["id"]
-                session["role"] = rows[0]["role"]
-                session["username"] = rows[0]["username"]
-                flash("Selamat Datang Admin!")
-                return redirect("/")
-            else:
-                return render_template("login.html")
-    else:
-        return render_template('login.html')
+        # db.execute("INSERT INTO user_intake (bio_id, food_id, food_name, meal_type, amount, unit, calories) VALUES (?, ?, ?, ?, ?, ?, ?)", bio_id, food_id, food_name, meal_type, amount, unit, calories)
+        # return redirect('/menu')
 
-@app.route("/logout")
-def logout():
-    """Log user out"""
-    # Forget any user_id
-    session.clear()
-    # Redirect user to login form
-    return redirect("/")
+# delete query kalkulator
+@app.route("/delete/<int:user_intake_id>", methods=["POST"])
+def delete(user_intake_id):
+    db.execute("DELETE FROM user_intake WHERE id = ?", user_intake_id)
+    flash("Data rencana menu dihapus!")
+    return redirect("/menu")
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    session.clear()
-    if request.method=="POST":
-        username = request.form.get("username")
-        if not request.form.get("username"):
-            return apology("Silakan mengisikan username")
+# load halaman saran menu (cadangan)
+@app.route('/saran_menu', methods=["GET", "POST"])
+@login_required
+def saran_menu():
+    user_id = session["user_id"]
+    data_menus = db.execute("SELECT * FROM user_intake WHERE user_id =?", user_id)
+    total_calories = sum(menu["amount"] * menu["calories"] for menu in data_menus)
+    return render_template("saran_menu.html", data_menus=data_menus, total_calories=total_calories)
 
-        email = request.form.get("email")
-        if not request.form.get("email"):
-            return apology("Silakan mengisikan email")
 
-        password = request.form.get("password")
-        if not request.form.get("password"):
-            return apology("Silakan mengisikan password")
-
-        confirmation = request.form.get("confirmation")
-        if not request.form.get("confirmation"):
-            return apology("Silakan mengisikan ulang passwordnya")
-
-        if password != confirmation:
-            return apology("Your password doesn't match")
-        
-        check_if_available = db.execute("SELECT * FROM users WHERE username = ? OR email = ?", username, email)
-        if len(check_if_available) == 1:
-            return apology("Username atau email sudah digunakan di situs ini. Silakan pilih username/email yang lain")
-
-        hashed = generate_password_hash(password)
-
-        db.execute("INSERT INTO users (username, email, hash, role) VALUES (?, ?, ?, ?)", username, email, hashed, "member")
-
-        registered = db.execute("select * from users where username = ?", username)
-        session["user_id"] = registered[0]["id"]
-        session["role"] = registered[0]["role"]
-        flash("Anda telah berhasil mendaftar di situs ini")
-        return redirect("/")
-            # janjane iki dashboar member atau admin gitu
-            # return redirect("/dashboard")
-            # berarti gawe dashboard.html
-    else:
-        return render_template("register.html")
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
+# -------------------------------------- dashboard panel for admin --------------------
+# dashboard page
 @app.route('/dashboard', methods=["GET", "POST"])
 @login_admin_required
 def dashboard():
@@ -299,32 +345,79 @@ def dashboard():
         total_bio = result_bio[0]["total_bio"]
         result_foods = db.execute("SELECT COUNT(*) AS total_foods FROM foods")
         total_foods = result_foods[0]["total_foods"]
-        return render_template('adm_dashboard.html', total_users=total_users, total_bio=total_bio, total_foods=total_foods)
+        result_intake = db.execute("SELECT COUNT(*) AS total_intake FROM user_intake")
+        total_intake = result_intake[0]["total_intake"]
+        return render_template('adm_dashboard.html', total_users=total_users, total_bio=total_bio, total_foods=total_foods, total_intake=total_intake)
     return render_template('dashboard.html')
 
+# ----------------------- manage user ------------------------------
+# show users
 @app.route('/manage_user', methods=["GET", "POST"])
 @login_admin_required
 def manage_user():
     users = db.execute("SELECT * FROM users")
     return render_template("manage-user.html", users=users)
 
+# edit user
+@app.route('/edit/pengguna/<int:user_id>', methods=['GET', 'POST'])
+def edit_user(user_id):
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        role = request.form['role']
+        db.execute("UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?", username, email, role, user_id)
+        flash("Pengguna berhasil diubah!")
+        return redirect('/manage_user')
+
+# ------------------------------------ manage data kalkulasi -------------
+# manage data calculating
 @app.route('/manage_calc', methods=["GET", "POST"])
 @login_admin_required
 def manage_calc():
     bios = db.execute("SELECT * FROM bio")
     return render_template("manage-kalk.html", bios=bios)
 
+# hapus data perhitungan
+@app.route('/delete/kalkulasi/<int:bio_id>', methods=['POST'])
+@login_admin_required
+def delete_bio(bio_id):
+    db.execute("DELETE FROM bio WHERE id = ?", bio_id)
+    return redirect("/manage_calc")
+
+# --------------------------------- manage menu --------------------------
+# manage data menu 
 @app.route('/manage_menu', methods=["GET", "POST"])
 @login_admin_required
 def manage_menu():
-    page = request.args.get('page', 1, type=int)
-    limit = 10
-    halaman = db.execute("SELECT COUNT(*) AS total_foods FROM foods")[0]['total_foods']
-    total_halaman = (halaman + limit - 1) // limit
-    foods = db.execute("SELECT * FROM foods")
-    food = foods[0]
-    return render_template("manage-menu.html", food=food, foods=foods, page=page, limit=limit, total_halaman=total_halaman)
+    if request.method == "POST":
+        # Tangani form
+        food_name = request.form.get("nama_makanan")
+        amount = request.form.get("jumlah")
+        unit = request.form.get("unit")
+        calories = request.form.get("calories")
+        # error handle
+        if not food_name or not unit or not calories:
+            flash("Semua kolom harus diisi untuk menambahkan menu diet")
+            return redirect("/manage_menu")
+        # Masukkan data ke database
+        db.execute("INSERT INTO foods (name, amount, unit, calories) VALUES (?, ?, ?, ?)", food_name, amount, unit, calories)
+        flash("Menu diet berhasil ditambahkan")
+        return redirect("/manage_menu")
+    else:
+        page = request.args.get('page', 1, type=int)
+        limit = 10
+        halaman = db.execute("SELECT COUNT(*) AS total_foods FROM foods")[0]['total_foods']
+        total_halaman = (halaman + limit - 1) // limit
+        foods = db.execute("SELECT * FROM foods")
+        food = foods[0]
+        cari = request.args.get('search')
+        if cari:
+            foods = db.execute("SELECT * FROM foods WHERE name LIKE ?", ('%' + cari + '%'))
+        else:
+            foods = db.execute("SELECT * FROM foods")
+        return render_template("manage-menu.html", food=food, foods=foods, page=page, limit=limit, total_halaman=total_halaman,cari=cari )
 
+# edit menu
 @app.route('/edit/<int:food_id>', methods=["POST"])
 @login_admin_required
 def edit_menu(food_id):
@@ -337,10 +430,15 @@ def edit_menu(food_id):
                    name=updated_name, unit=updated_unit, calories=updated_calories, id=food_id)
         flash("Update Menu Berhasil!")
         return redirect(url_for('manage_menu'))
-        
 
+# delete menu  
+@app.route("/delete/menu/<int:food_id>", methods=["POST"])
+def delete_food(food_id):
+    db.execute("DELETE FROM foods WHERE food_id = ?", food_id)
+    flash("Data makanan berhasil dihapus!")
+    return redirect("/manage_menu") 
 
-
+# ----------------- end manage menu -----------------
 
 if __name__ == '__main__':
     app.run(debug=True)

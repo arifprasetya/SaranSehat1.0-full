@@ -3,32 +3,74 @@
 {% block content %}
 
 <div class="section">
-    <div action="/manage_user" method="post"></form>
-    <h4>Manage User</h4>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th class="table-cell">Nama</th>
-                <th class="table-cell">Email</th>
-                <th class="table-cell">Role</th>
-                <th class="table-cell">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- TODO: Loop through the database entries to display them in this table -->
-            {% for user in users %}
-            <tr>
-                <td class="table-cell">{{ user.username }}</td>
-                <td class="table-cell">{{ user.email }}</td>
-                <td class="table-cell">{{ user.role }}</td>
-                <td class="table-cell">
-                    <div class="d-block my-1"><a href="/edit/{{ user.id }}" class="btn btn-primary btn-sm" style="width: 60px"> Edit </a></div>
-                    <div class="d-block my-1"><form action="/delete/{{ user.id }}" method="post"><button type="submit" class="btn btn-danger btn-sm"style="width: 60px">Delete</button></form></div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div action="/manage_user" method="post">
+        </form>
+        <h4>Manage User</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="table-cell">Nama</th>
+                    <th class="table-cell">Email</th>
+                    <th class="table-cell">Role</th>
+                    <th class="table-cell">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- TODO: Loop through the database entries to display them in this table -->
+                {% for user in users %}
+                <tr>
+                    <td class="table-cell">{{ user.username }}</td>
+                    <td class="table-cell">{{ user.email }}</td>
+                    <td class="table-cell">{{ user.role }}</td>
+                    <td class="table-cell">
+                        <div class="d-block my-1">
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#editModalUser{{ user.id }}" style="width: 60px"> Edit</button>
+                        </div>
+                        <form action="/delete/pengguna{{ user.id }}" method="post"
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data user ini?');">
+                            <button type="submit" class="btn btn-danger btn-sm" style="width: 60px">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-{% endblock %}
+    {% for user in users %}
+    <div class="modal fade" id="editModalUser{{ user.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ user.id }}"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel{{ user.id }}">Edit Pengguna</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for editing user -->
+                    <form action="/edit/pengguna/{{ user.id }}" method="post">
+                        <!-- Input fields for editing user details -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                value="{{ user.username }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <input type="text" class="form-control" name="role" value="{{ user.role }}" required>
+                        </div>
+                        <!-- Submit button -->
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% endblock %}

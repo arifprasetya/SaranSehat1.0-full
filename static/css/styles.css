@@ -130,11 +130,6 @@ nav {
   border-color: #007bff;
 }
 
-/* IMT result hidden */
-/* #imtResult {
-  display: none;
-} */
-
 
 /* flash message */
 #flash-message {
@@ -171,3 +166,13 @@ nav {
     fill: yellow;
 }
 
+/* paginasi */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pagination .btn {
+  background-color: gray;
+}
