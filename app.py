@@ -265,9 +265,9 @@ def show_menu():
     total_halaman = (halaman + limit - 1) // limit
     foods = db.execute("SELECT * FROM foods")
     food = foods[0]
-    
+    user_id = session["user_id"]
     # proses data bio utk menampilkan hasil
-    data_bio = db.execute("SELECT id, name, imt, bmr, tdee FROM bio ORDER BY id DESC LIMIT 1")[0]
+    data_bio = db.execute("SELECT id, name, imt, bmr, tdee FROM bio WHERE user_id = ? ORDER BY id DESC LIMIT 1", user_id)[0]
     # proses data user_intake
     data_menus = db.execute("SELECT * FROM user_intake")
     total_calories = sum(menu["amount"] * menu["calories"] for menu in data_menus)
@@ -286,7 +286,7 @@ def show_menu():
 def hitung_menu():
     user_id = session["user_id"]
     if request.method == 'POST':
-        bio_id_rows = db.execute("SELECT id FROM bio WHERE user_id = ?", user_id)
+        bio_id_rows = db.execute("SELECT id FROM bio WHERE user_id = ? ORDER BY id DESC LIMIT 1", user_id,)
         if bio_id_rows:
             bio_id = bio_id_rows[0]['id']
             food_id = request.form.get('food_id')
