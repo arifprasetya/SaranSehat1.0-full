@@ -3,6 +3,23 @@
 The application is free for use and is available in https://github.com/arifprasetya/SaranSehat1.0-full.git.
 Link to the video: [Saran Sehat](https://youtu.be/V1I_ZK46RkU)
 
+###**Structure**
+- SARANSEHAT1.0-MAIN
+    |-- __pychace__/
+    |-- flask_session/
+    |-- myenv/
+    |-- static/
+    |   |-- css/
+    |   |-- images/
+    |   |-- js/
+    |-- templates
+    |-- app.py
+    |-- helpers.py
+    |-- saransehat.db
+    |-- DESIGN.md
+    |-- README.md    
+
+
 ###**Database Schema**
 The database is designed using relational model. Foreign key constraint is used to keep the database integrity.
 <code>saransehat.db</code>has four tables to store the application data. 
