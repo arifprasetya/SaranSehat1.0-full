@@ -269,7 +269,7 @@ def show_menu():
     # proses data bio utk menampilkan hasil
     data_bio = db.execute("SELECT id, name, imt, bmr, tdee FROM bio WHERE user_id = ? ORDER BY id DESC LIMIT 1", user_id)[0]
     # proses data user_intake
-    data_menus = db.execute("SELECT * FROM user_intake")
+    data_menus = db.execute("SELECT * FROM user_intake WHERE bio_id = ?", data_bio['id'])
     total_calories = sum(menu["amount"] * menu["calories"] for menu in data_menus)
     # pencarian menu
     query = request.args.get('search')
@@ -286,7 +286,7 @@ def show_menu():
 def hitung_menu():
     user_id = session["user_id"]
     if request.method == 'POST':
-        bio_id_rows = db.execute("SELECT id FROM bio WHERE user_id = ? ORDER BY id DESC LIMIT 1", user_id,)
+        bio_id_rows = db.execute("SELECT id FROM bio WHERE user_id = ? ORDER BY id DESC LIMIT 1", user_id)
         if bio_id_rows:
             bio_id = bio_id_rows[0]['id']
             food_id = request.form.get('food_id')
@@ -301,19 +301,6 @@ def hitung_menu():
         else:
             return redirect('/menu')
         
-    # if request.method == 'POST':
-        # bio_id_rows = db.execute("SELECT id FROM bio")
-        # bio_id = bio_id_rows[0]['id']
-        # food_id = request.form.get('food_id')
-        # food_name = request.form.get('food_name')
-        # amount = request.form.get('amount')
-        # unit = request.form.get('unit')
-        # calories = request.form.get('calories')
-        # meal_type = request.form.get('meal_type')
-
-        # db.execute("INSERT INTO user_intake (bio_id, food_id, food_name, meal_type, amount, unit, calories) VALUES (?, ?, ?, ?, ?, ?, ?)", bio_id, food_id, food_name, meal_type, amount, unit, calories)
-        # return redirect('/menu')
-
 # delete query kalkulator
 @app.route("/delete/<int:user_intake_id>", methods=["POST"])
 def delete(user_intake_id):
