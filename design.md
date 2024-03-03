@@ -19,7 +19,6 @@ Link to the video: [Saran Sehat](https://youtu.be/V1I_ZK46RkU)
     |-- DESIGN.md
     |-- README.md    
 
-
 ###**Database Schema**
 The database is designed using relational model. Foreign key constraint is used to keep the database integrity.
 <code>saransehat.db</code>has four tables to store the application data. 
